@@ -1798,11 +1798,17 @@ class MergeSelector:
 
 
 def apply_modern_theme(root, style_obj):
-    """Apply a clean, modern desktop-app look using ttk (clam theme fallback).
-    Uses the palette constants above: primary blue, soft slate neutrals."""
+    """Apply a clean, modern desktop-app look using ttk with *clam* theme.
 
-    # ---- Theme: prefer vista/cla for consistent widgets across Windows/Linux/Mac
-    for theme_candidate in ("vista", "clam"):
+    CRITICAL: We force "clam" (cross-platform) instead of "vista/xpnative".
+    The Windows native themes silently ignore TButton.background, so on top of
+    the OS's default "gray gradient button" our foreground=white would produce
+    the classic "灰底白字看不清" symptom. Clam renders our ttk styles reliably
+    on every OS so the palette below is what you actually see on screen.
+    """
+
+    # ---- Theme: always start from clam; graceful fallback alt/default ----
+    for theme_candidate in ("clam", "alt", "default", "classic"):
         try:
             style_obj.theme_use(theme_candidate)
             break
@@ -1811,6 +1817,7 @@ def apply_modern_theme(root, style_obj):
 
     root.configure(bg=THEME_BG)
 
+    # Global font / neutral defaults
     style_obj.configure(".",
                         background=THEME_BG,
                         foreground=THEME_TEXT,
@@ -1819,8 +1826,10 @@ def apply_modern_theme(root, style_obj):
                         lightcolor=THEME_BORDER,
                         darkcolor=THEME_BORDER,
                         font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
-
-    style_obj.map(".", background=[("active", THEME_BG)])
+    try:
+        style_obj.map(".", background=[("active", THEME_BG)])
+    except Exception:
+        pass
 
     # ---- TFrame / TLabelFrame: card-style surfaces ----
     style_obj.configure("TFrame", background=THEME_BG)
@@ -1852,71 +1861,135 @@ def apply_modern_theme(root, style_obj):
                         foreground=THEME_TEXT,
                         font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
 
-    # ---- TButton: Primary (solid blue) + Secondary (ghost) + Danger ----
+    # =================================================================
+    # TButton family – HIGH CONTRAST redesigned (no "灰底白字" ever again)
+    # -----------------------------------------------------------------
+    #  - Default TButton : Slate-800 (near-black) deep solid + white text
+    #                      (WCAG AAA contrast on clam). Acts as safe base
+    #                      for any button we forget to style.
+    #  - Primary.TButton : Blue-600 solid + white ("主操作")
+    #  - Accent.TButton  : Sky-600 solid + white ("强调操作")
+    #  - Ghost.TButton   : Light off-white card + Slate-700 DARK text
+    #                      ("次要/浏览"按钮，outlined 风格)
+    # 所有按钮统一 1px 实体边框 + 稍微加大内边距，形成清晰的"按钮轮廓"。
+    # =================================================================
+    BTN_BORDER = 1
+    BTN_PAD_X = 16
+    BTN_PAD_Y = 8
+    BTN_FONT = (FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold")
+
+    # ---- Default TButton (deep slate solid → white) -------------------
     style_obj.configure("TButton",
-                        padding=(SP["md"], SP["sm"]),
-                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold"),
-                        borderwidth=0, focusthickness=0)
+                        padding=(BTN_PAD_X, BTN_PAD_Y),
+                        font=BTN_FONT,
+                        borderwidth=BTN_BORDER,
+                        focusthickness=1,
+                        relief="solid")
     style_obj.map("TButton",
-                  background=[("!disabled", THEME_SECONDARY),
-                              ("active", "#475569"),
-                              ("pressed", "#334155"),
-                              ("disabled", THEME_BORDER)],
+                  background=[("!disabled", "#334155"),   # Slate-800 deep (近黑)
+                              ("active",    "#1e293b"),   # Slate-900 hover 再深一级
+                              ("pressed",   "#0f172a"),   # Slate-950 按下
+                              ("disabled",  "#cbd5e1")],
                   foreground=[("!disabled", "white"),
-                              ("disabled", "#94a3b8")])
+                              ("disabled",  "#94a3b8")],
+                  bordercolor=[("!disabled", "#1e293b"),
+                               ("active",    "#0f172a"),
+                               ("pressed",   "#020617"),
+                               ("disabled",  "#cbd5e1")])
 
-    style_obj.configure("Primary.TButton")
+    # ---- Primary.TButton (Blue solid → white) ------------------------
+    style_obj.configure("Primary.TButton",
+                        padding=(BTN_PAD_X, BTN_PAD_Y),
+                        font=BTN_FONT,
+                        borderwidth=BTN_BORDER,
+                        focusthickness=1,
+                        relief="solid")
     style_obj.map("Primary.TButton",
-                  background=[("!disabled", THEME_PRIMARY),
-                              ("active", THEME_PRIMARY_HOV),
-                              ("pressed", "#1e40af"),
-                              ("disabled", THEME_BORDER)],
+                  background=[("!disabled", "#2563eb"),   # Blue-600 主色
+                              ("active",    "#1d4ed8"),   # Blue-700 hover
+                              ("pressed",   "#1e3a8a"),   # Blue-900 pressed
+                              ("disabled",  "#cbd5e1")],
                   foreground=[("!disabled", "white"),
-                              ("disabled", "#94a3b8")])
+                              ("disabled",  "#94a3b8")],
+                  bordercolor=[("!disabled", "#1d4ed8"),
+                               ("active",    "#1e40af"),
+                               ("pressed",   "#1e3a8a"),
+                               ("disabled",  "#cbd5e1")])
 
-    style_obj.configure("Accent.TButton")
+    # ---- Accent.TButton (Sky solid → white) --------------------------
+    style_obj.configure("Accent.TButton",
+                        padding=(BTN_PAD_X, BTN_PAD_Y),
+                        font=BTN_FONT,
+                        borderwidth=BTN_BORDER,
+                        focusthickness=1,
+                        relief="solid")
     style_obj.map("Accent.TButton",
-                  background=[("!disabled", THEME_ACCENT),
-                              ("active", "#0284c7"),
-                              ("pressed", "#0369a1"),
-                              ("disabled", THEME_BORDER)],
+                  background=[("!disabled", "#0284c7"),   # Sky-600
+                              ("active",    "#0369a1"),   # Sky-700 hover
+                              ("pressed",   "#075985"),   # Sky-800 pressed
+                              ("disabled",  "#cbd5e1")],
                   foreground=[("!disabled", "white"),
-                              ("disabled", "#94a3b8")])
+                              ("disabled",  "#94a3b8")],
+                  bordercolor=[("!disabled", "#0369a1"),
+                               ("active",    "#075985"),
+                               ("pressed",   "#0c4a6e"),
+                               ("disabled",  "#cbd5e1")])
 
+    # ---- Ghost.TButton (outlined: 浅色背景 + 深色字 + 边框) -----------
+    # 重要：这里故意是"浅底 + 深字"，高对比，绝不会"灰底白字看不清"。
     style_obj.configure("Ghost.TButton",
-                        padding=(SP["md"], SP["sm"]))
+                        padding=(BTN_PAD_X, BTN_PAD_Y),
+                        font=BTN_FONT,
+                        borderwidth=BTN_BORDER,
+                        focusthickness=1,
+                        relief="solid")
     style_obj.map("Ghost.TButton",
-                  background=[("!disabled", THEME_SURFACE),
-                              ("active", "#f1f5f9"),
-                              ("pressed", "#e2e8f0")],
-                  foreground=[("!disabled", THEME_TEXT),
-                              ("disabled", THEME_TEXT_MUTED)],
-                  bordercolor=[("!disabled", THEME_BORDER)])
+                  background=[("!disabled", "#f8fafc"),   # Slate-50 (比 THEME_SURFACE 浅一级，可辨识)
+                              ("active",    "#e2e8f0"),   # Slate-200 hover
+                              ("pressed",   "#cbd5e1"),   # Slate-300 pressed
+                              ("disabled",  "#f1f5f9")],
+                  foreground=[("!disabled", "#1e293b"),   # Slate-800 深色字
+                              ("disabled",  "#94a3b8")],
+                  bordercolor=[("!disabled", "#94a3b8"),  # Slate-500 边框
+                               ("active",    "#64748b"),  # Slate-500 hover 更深
+                               ("pressed",   "#334155"),  # Slate-700 pressed
+                               ("disabled",  "#e2e8f0")])
 
-    # ---- TEntry / TCombobox ----
+    # ---- TEntry / TCombobox ------------------------------------------
     style_obj.configure("TEntry",
-                        padding=(SP["sm"], SP["sm"]),
+                        padding=(8, 8),
                         fieldbackground=THEME_SURFACE,
                         foreground=THEME_TEXT,
                         bordercolor=THEME_BORDER,
                         lightcolor=THEME_BORDER,
                         darkcolor=THEME_BORDER,
                         insertcolor=THEME_TEXT,
-                        arrowcolor=THEME_TEXT)
+                        arrowcolor=THEME_TEXT,
+                        borderwidth=1,
+                        relief="solid")
     style_obj.map("TEntry",
                   bordercolor=[("focus", THEME_PRIMARY)],
                   lightcolor=[("focus", THEME_PRIMARY)],
                   darkcolor=[("focus", THEME_PRIMARY)])
 
     style_obj.configure("TCombobox",
-                        padding=(SP["sm"], SP["sm"]),
+                        padding=(8, 8),
                         fieldbackground=THEME_SURFACE,
                         foreground=THEME_TEXT,
-                        arrowcolor=THEME_TEXT)
+                        arrowcolor=THEME_TEXT,
+                        borderwidth=1,
+                        relief="solid")
     style_obj.map("TCombobox",
                   bordercolor=[("focus", THEME_PRIMARY)],
                   lightcolor=[("focus", THEME_PRIMARY)],
                   darkcolor=[("focus", THEME_PRIMARY)])
+    try:
+        style_obj.configure("TCombobox.field",
+                            padding=(4, 4),
+                            background=THEME_SURFACE,
+                            foreground=THEME_TEXT)
+    except Exception:
+        pass
 
     # ---- TCheckbutton / TRadiobutton ----
     style_obj.configure("TCheckbutton",
@@ -1929,19 +2002,22 @@ def apply_modern_theme(root, style_obj):
 
     # ---- TPanedWindow ----
     style_obj.configure("TPanedwindow", background=THEME_BG)
-    style_obj.configure("TPanedwindow.Sash",
-                        background=THEME_BG,
-                        sashwidth=4, sashrelief="flat")
+    try:
+        style_obj.configure("TPanedwindow.Sash",
+                            background=THEME_BG,
+                            sashwidth=4, sashrelief="flat")
+    except Exception:
+        pass
 
     # ---- TScrollbar: slim, minimal ----
     style_obj.configure("TScrollbar",
-                        background="#cbd5e1",
+                        background="#94a3b8",
                         troughcolor=THEME_BG,
                         borderwidth=0,
-                        arrowcolor="#94a3b8",
+                        arrowcolor="#64748b",
                         width=10)
     style_obj.map("TScrollbar",
-                  background=[("active", "#94a3b8"),
+                  background=[("active", "#475569"),
                               ("disabled", "#e2e8f0")])
 
     # ---- Treeview (the heart of the diff display) ----
@@ -1949,15 +2025,18 @@ def apply_modern_theme(root, style_obj):
                         background=THEME_SURFACE,
                         fieldbackground=THEME_SURFACE,
                         foreground=THEME_TEXT,
-                        rowheight=26,
+                        rowheight=28,
                         bordercolor=THEME_BORDER,
                         lightcolor=THEME_BORDER,
                         darkcolor=THEME_BORDER,
-                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL),
+                        borderwidth=1,
+                        relief="solid")
     style_obj.configure("Treeview.Heading",
-                        background=THEME_BG,
+                        background="#f1f5f9",
                         foreground=THEME_TEXT,
-                        relief="flat",
+                        relief="solid",
+                        borderwidth=1,
                         font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold"))
     style_obj.map("Treeview",
                   background=[("selected", THEME_PRIMARY)],
