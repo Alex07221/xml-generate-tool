@@ -142,13 +142,16 @@ for key, entry in tool.TRANSLATIONS.items():
         if not entry.get(lang):
             missing_translations.append((key, lang))
 
-check("i18n: every key has all 5 supported languages (zh/en/es/fr/ru)",
+check("i18n: every key has all %d supported languages (Top 16: en zh es hi ar bn fr ru pt id de ja ur ko it tr)"
+      % len(tool.SUPPORTED_LANGUAGES),
       len(missing_translations) == 0)
 if missing_translations:
     print("    missing:", missing_translations[:10])
 
-check("i18n: exactly 5 supported languages",
-      set(tool.SUPPORTED_LANGUAGES) == {"zh", "en", "es", "fr", "ru"})
+TOP_16 = {"en", "zh", "es", "hi", "ar", "bn", "fr", "ru", "pt",
+          "id", "de", "ja", "ur", "ko", "it", "tr"}
+check("i18n: exactly 16 supported languages (Top 16 worldwide)",
+      set(tool.SUPPORTED_LANGUAGES) == TOP_16 and len(tool.SUPPORTED_LANGUAGES) == 16)
 
 tool.set_language("fr")
 check("i18n: set_language + t() switches text", tool.t("cancel_button") == "Annuler")

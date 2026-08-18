@@ -36,528 +36,37 @@ MATCH_KEYS = (
 
 
 # ---------------------------------------------------------------------------
-# Internationalization (i18n)
+# Modern i18n layer – 16 languages loaded from i18n/translations/*.json
 # ---------------------------------------------------------------------------
-# Supported UI languages. Native display names are what appear in the
-# language switcher dropdown.
-SUPPORTED_LANGUAGES = ("zh", "en", "es", "fr", "ru")
-LANGUAGE_NAMES = {
-    "zh": "中文",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "ru": "Русский",
-}
-DEFAULT_LANGUAGE = "en"
+import i18n as _i18n
 
-TRANSLATIONS = {
-    "app_title": {
-        "zh": "XML / META 合并工具", "en": "XML / META Merge Tool",
-        "es": "Herramienta de fusión XML / META", "fr": "Outil de fusion XML / META",
-        "ru": "Инструмент слияния XML / META",
-    },
-    "language_label": {
-        "zh": "语言：", "en": "Language:", "es": "Idioma:", "fr": "Langue :", "ru": "Язык:",
-    },
-    "file1_label": {
-        "zh": "文件 1:", "en": "File 1:", "es": "Archivo 1:", "fr": "Fichier 1 :", "ru": "Файл 1:",
-    },
-    "file2_label": {
-        "zh": "文件 2:", "en": "File 2:", "es": "Archivo 2:", "fr": "Fichier 2 :", "ru": "Файл 2:",
-    },
-    "choose_file_button": {
-        "zh": "选择文件", "en": "Choose File", "es": "Elegir archivo",
-        "fr": "Choisir un fichier", "ru": "Выбрать файл",
-    },
-    "load_compare_button": {
-        "zh": "加载并比较", "en": "Load && Compare", "es": "Cargar y comparar",
-        "fr": "Charger et comparer", "ru": "Загрузить и сравнить",
-    },
-    "select_merge_button": {
-        "zh": "按元素选择合并", "en": "Select Elements to Merge",
-        "es": "Seleccionar elementos para fusionar",
-        "fr": "Sélectionner les éléments à fusionner",
-        "ru": "Выбрать элементы для слияния",
-    },
-    "manual_wizard_button": {
-        "zh": "手动合并向导", "en": "Manual Merge Wizard", "es": "Asistente de fusión manual",
-        "fr": "Assistant de fusion manuelle", "ru": "Мастер ручного слияния",
-    },
-    "clear_rules_button": {
-        "zh": "清除全部规则", "en": "Clear All Rules", "es": "Borrar todas las reglas",
-        "fr": "Effacer toutes les règles", "ru": "Очистить все правила",
-    },
-    "only_diff_checkbox": {
-        "zh": "只显示有差异节点", "en": "Show Differences Only", "es": "Mostrar solo diferencias",
-        "fr": "Afficher uniquement les différences", "ru": "Показывать только различия",
-    },
-    "preview_button": {
-        "zh": "预览合并结果", "en": "Preview Merge Result", "es": "Previsualizar resultado",
-        "fr": "Aperçu du résultat", "ru": "Предпросмотр результата",
-    },
-    "save_button": {
-        "zh": "保存合并结果", "en": "Save Merge Result", "es": "Guardar resultado",
-        "fr": "Enregistrer le résultat", "ru": "Сохранить результат",
-    },
-    "rule_count_label": {
-        "zh": "合并规则：{n}", "en": "Merge Rules: {n}", "es": "Reglas de fusión: {n}",
-        "fr": "Règles de fusion : {n}", "ru": "Правил слияния: {n}",
-    },
-    "prev_diff_button": {
-        "zh": "◀ 上一个差异", "en": "◀ Previous Diff", "es": "◀ Diferencia anterior",
-        "fr": "◀ Différence précédente", "ru": "◀ Пред. отличие",
-    },
-    "next_diff_button": {
-        "zh": "下一个差异 ▶", "en": "Next Diff ▶", "es": "Diferencia siguiente ▶",
-        "fr": "Différence suivante ▶", "ru": "След. отличие ▶",
-    },
-    "diff_pos_label": {
-        "zh": "差异 {current} / {total}", "en": "Diff {current} / {total}",
-        "es": "Diferencia {current} / {total}", "fr": "Différence {current} / {total}",
-        "ru": "Отличие {current} / {total}",
-    },
-    "legend_added": {
-        "zh": "新增", "en": "Added", "es": "Añadido", "fr": "Ajouté", "ru": "Добавлено",
-    },
-    "legend_removed": {
-        "zh": "删除", "en": "Removed", "es": "Eliminado", "fr": "Supprimé", "ru": "Удалено",
-    },
-    "legend_modified": {
-        "zh": "修改", "en": "Modified", "es": "Modificado", "fr": "Modifié", "ru": "Изменено",
-    },
-    "legend_changed": {
-        "zh": "子项含差异", "en": "Contains Changes", "es": "Contiene cambios",
-        "fr": "Contient des changements", "ru": "Содержит изменения",
-    },
-    "col_element": {
-        "zh": "元素 / 代码块", "en": "Element / Node", "es": "Elemento / Nodo",
-        "fr": "Élément / Nœud", "ru": "Элемент / Узел",
-    },
-    "col_path": {
-        "zh": "路径", "en": "Path", "es": "Ruta", "fr": "Chemin", "ru": "Путь",
-    },
-    "col_state": {
-        "zh": "状态", "en": "State", "es": "Estado", "fr": "État", "ru": "Статус",
-    },
-    "col_source": {
-        "zh": "合并来源", "en": "Merge Source", "es": "Origen de fusión",
-        "fr": "Source de fusion", "ru": "Источник слияния",
-    },
-    "frame_file1": {
-        "zh": "文件 1", "en": "File 1", "es": "Archivo 1", "fr": "Fichier 1", "ru": "Файл 1",
-    },
-    "frame_file2": {
-        "zh": "文件 2", "en": "File 2", "es": "Archivo 2", "fr": "Fichier 2", "ru": "Файл 2",
-    },
-    "frame_detail": {
-        "zh": "选中节点 / 差异", "en": "Selected Node / Difference",
-        "es": "Nodo seleccionado / Diferencia", "fr": "Nœud sélectionné / Différence",
-        "ru": "Выбранный узел / Отличие",
-    },
-    "status_initial": {
-        "zh": "请选择两个 XML / META 文件。", "en": "Please select two XML / META files.",
-        "es": "Seleccione dos archivos XML / META.",
-        "fr": "Veuillez sélectionner deux fichiers XML / META.",
-        "ru": "Выберите два файла XML / META.",
-    },
-    "status_compare_done": {
-        "zh": "比较完成：{diff_count} 个节点存在差异（其中 {minimal_count} 个可直接设为合并规则的"
-              "最小差异点）。可以点击“按元素选择合并”或“手动合并向导”。",
-        "en": "Comparison complete: {diff_count} differing node(s) ({minimal_count} minimal "
-              "diff point(s) can be turned directly into merge rules). "
-              "Click \"Select Elements to Merge\" or \"Manual Merge Wizard\".",
-        "es": "Comparación completa: {diff_count} nodo(s) con diferencias ({minimal_count} "
-              "punto(s) mínimos se pueden convertir directamente en reglas de fusión). "
-              "Haga clic en \"Seleccionar elementos para fusionar\" o "
-              "\"Asistente de fusión manual\".",
-        "fr": "Comparaison terminée : {diff_count} nœud(s) en différence ({minimal_count} "
-              "point(s) de différence minimaux peuvent devenir directement des règles de "
-              "fusion). Cliquez sur « Sélectionner les éléments à fusionner » ou "
-              "« Assistant de fusion manuelle ».",
-        "ru": "Сравнение завершено: узлов с отличиями — {diff_count} (из них {minimal_count} "
-              "можно сразу превратить в правила слияния). Нажмите «Выбрать элементы для "
-              "слияния» или «Мастер ручного слияния».",
-    },
-    "msg_select_both_files": {
-        "zh": "请选择文件 1 和文件 2。", "en": "Please select File 1 and File 2.",
-        "es": "Seleccione el archivo 1 y el archivo 2.",
-        "fr": "Veuillez sélectionner le fichier 1 et le fichier 2.",
-        "ru": "Выберите файл 1 и файл 2.",
-    },
-    "dlg_title_parse_failed": {
-        "zh": "解析失败", "en": "Parse Failed", "es": "Error de análisis",
-        "fr": "Échec de l'analyse", "ru": "Ошибка разбора",
-    },
-    "dlg_title_notice": {
-        "zh": "提示", "en": "Notice", "es": "Aviso", "fr": "Avis", "ru": "Уведомление",
-    },
-    "dlg_title_save_failed": {
-        "zh": "保存失败", "en": "Save Failed", "es": "Error al guardar",
-        "fr": "Échec de l'enregistrement", "ru": "Ошибка сохранения",
-    },
-    "dlg_title_done": {
-        "zh": "完成", "en": "Done", "es": "Listo", "fr": "Terminé", "ru": "Готово",
-    },
-    "filetype_xmlmeta": {
-        "zh": "XML / META 文件", "en": "XML / META Files", "es": "Archivos XML / META",
-        "fr": "Fichiers XML / META", "ru": "Файлы XML / META",
-    },
-    "filetype_xml": {
-        "zh": "XML 文件", "en": "XML Files", "es": "Archivos XML", "fr": "Fichiers XML",
-        "ru": "Файлы XML",
-    },
-    "filetype_meta": {
-        "zh": "META 文件", "en": "META Files", "es": "Archivos META", "fr": "Fichiers META",
-        "ru": "Файлы META",
-    },
-    "filetype_all": {
-        "zh": "所有文件", "en": "All Files", "es": "Todos los archivos", "fr": "Tous les fichiers",
-        "ru": "Все файлы",
-    },
-    "choose_file1_title": {
-        "zh": "选择文件 1", "en": "Choose File 1", "es": "Elegir archivo 1",
-        "fr": "Choisir le fichier 1", "ru": "Выбрать файл 1",
-    },
-    "choose_file2_title": {
-        "zh": "选择文件 2", "en": "Choose File 2", "es": "Elegir archivo 2",
-        "fr": "Choisir le fichier 2", "ru": "Выбрать файл 2",
-    },
-    "status_saved": {
-        "zh": "已保存：{path}", "en": "Saved: {path}", "es": "Guardado: {path}",
-        "fr": "Enregistré : {path}", "ru": "Сохранено: {path}",
-    },
-    "msg_save_done": {
-        "zh": "合并结果已保存。", "en": "Merge result saved.", "es": "Resultado de fusión guardado.",
-        "fr": "Résultat de fusion enregistré.", "ru": "Результат слияния сохранён.",
-    },
-    "status_rules_cleared": {
-        "zh": "已清除所有元素合并规则。", "en": "All merge rules cleared.",
-        "es": "Todas las reglas de fusión borradas.",
-        "fr": "Toutes les règles de fusion effacées.", "ru": "Все правила слияния очищены.",
-    },
-    "status_rules_set": {
-        "zh": "已设置 {n} 条元素合并规则。未指定节点保持文件 1。",
-        "en": "{n} merge rule(s) set. Unspecified nodes keep File 1.",
-        "es": "{n} regla(s) de fusión establecidas. Los nodos no especificados mantienen el archivo 1.",
-        "fr": "{n} règle(s) de fusion définies. Les nœuds non spécifiés conservent le fichier 1.",
-        "ru": "Установлено правил слияния: {n}. Неуказанные узлы остаются из файла 1.",
-    },
-    "status_manual_wizard_updated": {
-        "zh": "手动合并向导已更新，共有 {n} 条元素合并规则。",
-        "en": "Manual merge wizard updated, {n} merge rule(s) total now.",
-        "es": "Asistente de fusión manual actualizado, {n} regla(s) de fusión en total.",
-        "fr": "Assistant de fusion manuelle mis à jour, {n} règle(s) de fusion au total.",
-        "ru": "Мастер ручного слияния обновлён, всего правил слияния: {n}.",
-    },
-    "msg_load_compare_first": {
-        "zh": "请先加载并比较两个文件。", "en": "Please load and compare two files first.",
-        "es": "Primero cargue y compare dos archivos.",
-        "fr": "Veuillez d'abord charger et comparer deux fichiers.",
-        "ru": "Сначала загрузите и сравните два файла.",
-    },
-    "msg_no_nav_diffs": {
-        "zh": "没有检测到可定位的差异点，请先加载并比较文件。",
-        "en": "No navigable diff points detected. Please load and compare files first.",
-        "es": "No se detectaron diferencias para navegar. Cargue y compare los archivos primero.",
-        "fr": "Aucune différence navigable détectée. Chargez et comparez d'abord les fichiers.",
-        "ru": "Не найдено отличий для перехода. Сначала загрузите и сравните файлы.",
-    },
-    "msg_no_manual_diffs": {
-        "zh": "没有检测到差异点，无需手动合并。",
-        "en": "No diff points detected, nothing to merge manually.",
-        "es": "No se detectaron diferencias, no hay nada que fusionar manualmente.",
-        "fr": "Aucune différence détectée, rien à fusionner manuellement.",
-        "ru": "Отличий не найдено, вручную сливать нечего.",
-    },
-    "not_exist": {
-        "zh": "[不存在]", "en": "[does not exist]", "es": "[no existe]",
-        "fr": "[n'existe pas]", "ru": "[отсутствует]",
-    },
-    "detail_path_header": {
-        "zh": "===== 路径 =====\n{path}\n\n", "en": "===== Path =====\n{path}\n\n",
-        "es": "===== Ruta =====\n{path}\n\n", "fr": "===== Chemin =====\n{path}\n\n",
-        "ru": "===== Путь =====\n{path}\n\n",
-    },
-    "detail_file1_header": {
-        "zh": "===== 文件 1 =====\n", "en": "===== File 1 =====\n", "es": "===== Archivo 1 =====\n",
-        "fr": "===== Fichier 1 =====\n", "ru": "===== Файл 1 =====\n",
-    },
-    "detail_file2_header": {
-        "zh": "\n===== 文件 2 =====\n", "en": "\n===== File 2 =====\n",
-        "es": "\n===== Archivo 2 =====\n", "fr": "\n===== Fichier 2 =====\n",
-        "ru": "\n===== Файл 2 =====\n",
-    },
-    "detail_current_source": {
-        "zh": "当前合并来源：{source}\n\n", "en": "Current merge source: {source}\n\n",
-        "es": "Origen de fusión actual: {source}\n\n", "fr": "Source de fusion actuelle : {source}\n\n",
-        "ru": "Текущий источник слияния: {source}\n\n",
-    },
-    "source_file1": {
-        "zh": "文件 1", "en": "File 1", "es": "Archivo 1", "fr": "Fichier 1", "ru": "Файл 1",
-    },
-    "source_file2": {
-        "zh": "文件 2", "en": "File 2", "es": "Archivo 2", "fr": "Fichier 2", "ru": "Файл 2",
-    },
-    "state_added": {
-        "zh": "新增", "en": "Added", "es": "Añadido", "fr": "Ajouté", "ru": "Добавлено",
-    },
-    "state_removed": {
-        "zh": "删除", "en": "Removed", "es": "Eliminado", "fr": "Supprimé", "ru": "Удалено",
-    },
-    "state_modified": {
-        "zh": "修改", "en": "Modified", "es": "Modificado", "fr": "Modifié", "ru": "Изменено",
-    },
-    "state_changed": {
-        "zh": "含差异(子项)", "en": "Contains Diff (child)", "es": "Contiene diferencia (hijo)",
-        "fr": "Contient une différence (enfant)", "ru": "Есть отличие (дочерний)",
-    },
-    "state_same": {
-        "zh": "相同", "en": "Same", "es": "Igual", "fr": "Identique", "ru": "Совпадает",
-    },
-    "parse_error_message": {
-        "zh": "无法解析为 XML/META。\n{path}\n最后错误：{error}",
-        "en": "Could not parse as XML/META.\n{path}\nLast error: {error}",
-        "es": "No se pudo interpretar como XML/META.\n{path}\nÚltimo error: {error}",
-        "fr": "Impossible d'analyser comme XML/META.\n{path}\nDernière erreur : {error}",
-        "ru": "Не удалось разобрать как XML/META.\n{path}\nПоследняя ошибка: {error}",
-    },
-    "preview_window_title": {
-        "zh": "合并结果预览", "en": "Merge Result Preview", "es": "Vista previa del resultado",
-        "fr": "Aperçu du résultat de fusion", "ru": "Предпросмотр результата слияния",
-    },
+SUPPORTED_LANGUAGES = _i18n.SUPPORTED_LANGUAGES
+LANGUAGE_NAMES    = _i18n.LANGUAGE_NAMES
+DEFAULT_LANGUAGE  = _i18n.DEFAULT_LANGUAGE
 
-    # MergeSelector
-    "merge_selector_title": {
-        "zh": "按元素选择合并", "en": "Select Elements to Merge",
-        "es": "Seleccionar elementos para fusionar",
-        "fr": "Sélectionner les éléments à fusionner", "ru": "Выбор элементов для слияния",
-    },
-    "merge_selector_instruction": {
-        "zh": "先选择一个或多个元素，再指定它们使用文件 1 或文件 2。",
-        "en": "Select one or more elements, then choose File 1 or File 2 as the source.",
-        "es": "Seleccione uno o más elementos y elija el archivo 1 o el archivo 2 como origen.",
-        "fr": "Sélectionnez un ou plusieurs éléments, puis choisissez le fichier 1 ou 2 comme source.",
-        "ru": "Выберите один или несколько элементов, затем укажите файл 1 или файл 2 как источник.",
-    },
-    "group_by_type_checkbox": {
-        "zh": "按元素类型分组（推荐，同类元素只需设置一次规则）",
-        "en": "Group by Element Type (recommended - set once per element kind)",
-        "es": "Agrupar por tipo de elemento (recomendado, una sola regla por tipo)",
-        "fr": "Regrouper par type d'élément (recommandé, une seule règle par type)",
-        "ru": "Группировать по типу элемента (рекомендуется — одно правило на тип)",
-    },
-    "select_all_diff_button": {
-        "zh": "全选差异", "en": "Select All Diffs", "es": "Seleccionar todas las diferencias",
-        "fr": "Sélectionner toutes les différences", "ru": "Выбрать все отличия",
-    },
-    "clear_selection_button": {
-        "zh": "清除选择", "en": "Clear Selection", "es": "Borrar selección",
-        "fr": "Effacer la sélection", "ru": "Очистить выбор",
-    },
-    "panel_node_compare": {
-        "zh": "节点对比", "en": "Node Comparison", "es": "Comparación de nodos",
-        "fr": "Comparaison des nœuds", "ru": "Сравнение узлов",
-    },
-    "label_set_selected": {
-        "zh": "对选中的元素/分组设置：", "en": "For selected element(s)/group(s), use:",
-        "es": "Para los elementos/grupos seleccionados, usar:",
-        "fr": "Pour les éléments/groupes sélectionnés, utiliser :",
-        "ru": "Для выбранных элементов/групп использовать:",
-    },
-    "use_xml1_button": {
-        "zh": "使用 XML 1", "en": "Use XML 1", "es": "Usar XML 1", "fr": "Utiliser XML 1",
-        "ru": "Использовать XML 1",
-    },
-    "use_xml2_button": {
-        "zh": "使用 XML 2", "en": "Use XML 2", "es": "Usar XML 2", "fr": "Utiliser XML 2",
-        "ru": "Использовать XML 2",
-    },
-    "clear_source_button": {
-        "zh": "取消指定", "en": "Unset", "es": "Anular", "fr": "Désassigner", "ru": "Сбросить",
-    },
-    "all_xml1_button": {
-        "zh": "全部 XML 1", "en": "All XML 1", "es": "Todo XML 1", "fr": "Tout XML 1",
-        "ru": "Всё из XML 1",
-    },
-    "all_xml2_button": {
-        "zh": "全部 XML 2", "en": "All XML 2", "es": "Todo XML 2", "fr": "Tout XML 2",
-        "ru": "Всё из XML 2",
-    },
-    "cancel_button": {
-        "zh": "取消", "en": "Cancel", "es": "Cancelar", "fr": "Annuler", "ru": "Отмена",
-    },
-    "apply_rules_button": {
-        "zh": "应用合并规则", "en": "Apply Merge Rules", "es": "Aplicar reglas de fusión",
-        "fr": "Appliquer les règles de fusion", "ru": "Применить правила слияния",
-    },
-    "group_row_label": {
-        "zh": "{tag}（{n} 处差异）", "en": "{tag} ({n} differences)",
-        "es": "{tag} ({n} diferencias)", "fr": "{tag} ({n} différences)",
-        "ru": "{tag} (отличий: {n})",
-    },
-    "status_group": {
-        "zh": "分组", "en": "Group", "es": "Grupo", "fr": "Groupe", "ru": "Группа",
-    },
-    "status_mixed": {
-        "zh": "混合", "en": "Mixed", "es": "Mixto", "fr": "Mixte", "ru": "Смешанный",
-    },
-    "detail_group_header": {
-        "zh": "===== 分组：{tag}（{n} 处差异） =====\n\n"
-              "展开此分组以查看每一处差异，或直接为整组设置来源。\n\n",
-        "en": "===== Group: {tag} ({n} differences) =====\n\n"
-              "Expand this group to see each difference, or set a source for the whole group.\n\n",
-        "es": "===== Grupo: {tag} ({n} diferencias) =====\n\n"
-              "Expanda este grupo para ver cada diferencia, o establezca un origen para todo el grupo.\n\n",
-        "fr": "===== Groupe : {tag} ({n} différences) =====\n\n"
-              "Développez ce groupe pour voir chaque différence, ou définissez une source pour tout le groupe.\n\n",
-        "ru": "===== Группа: {tag} (отличий: {n}) =====\n\n"
-              "Разверните группу, чтобы увидеть каждое отличие, либо задайте источник сразу для всей группы.\n\n",
-    },
-    "blocked_rule_msg": {
-        "zh": "{n} 个节点仅因为子元素存在差异而显示为差异，无法直接设为规则（这样会替换整个子树）。"
-              "请展开该节点为具体子元素设置规则，或使用“手动合并向导”逐个处理。",
-        "en": "{n} node(s) only show as different because a child element differs, so they can't "
-              "be turned directly into a rule (that would replace the whole subtree). "
-              "Please expand the node to set a rule on the specific child, or use the "
-              "\"Manual Merge Wizard\" to handle them one by one.",
-        "es": "{n} nodo(s) solo muestran diferencia porque un elemento hijo difiere, por lo que no "
-              "se pueden convertir directamente en una regla (reemplazaría todo el subárbol). "
-              "Expanda el nodo para establecer una regla en el hijo específico, o use el "
-              "\"Asistente de fusión manual\" para procesarlos uno por uno.",
-        "fr": "{n} nœud(s) n'apparaissent en différence qu'à cause d'un élément enfant, ils ne "
-              "peuvent donc pas devenir directement une règle (cela remplacerait tout le "
-              "sous-arbre). Développez le nœud pour définir une règle sur l'enfant concerné, ou "
-              "utilisez l'« Assistant de fusion manuelle » pour les traiter un par un.",
-        "ru": "{n} узел(узлов) отмечены как отличающиеся только из-за дочернего элемента, "
-              "поэтому их нельзя напрямую превратить в правило (это заменило бы всё поддерево). "
-              "Разверните узел, чтобы задать правило для конкретного дочернего элемента, либо "
-              "используйте «Мастер ручного слияния», чтобы обработать их по одному.",
-    },
+set_language           = _i18n.set_language
+get_language           = _i18n.get_language
+t                      = _i18n.t
+detect_system_language = _i18n.detect_system_language
 
-    # ManualMergeWizard
-    "wizard_title": {
-        "zh": "手动合并向导", "en": "Manual Merge Wizard", "es": "Asistente de fusión manual",
-        "fr": "Assistant de fusion manuelle", "ru": "Мастер ручного слияния",
-    },
-    "wizard_pos_label": {
-        "zh": "差异 {current} / {total}", "en": "Diff {current} / {total}",
-        "es": "Diferencia {current} / {total}", "fr": "Différence {current} / {total}",
-        "ru": "Отличие {current} / {total}",
-    },
-    "wizard_no_diffs": {
-        "zh": "没有可手动处理的差异点。", "en": "No diff points to handle manually.",
-        "es": "No hay diferencias para procesar manualmente.",
-        "fr": "Aucune différence à traiter manuellement.",
-        "ru": "Нет отличий для ручной обработки.",
-    },
-    "prev_shortcut": {
-        "zh": "◀ 上一个 (←)", "en": "◀ Previous (←)", "es": "◀ Anterior (←)",
-        "fr": "◀ Précédent (←)", "ru": "◀ Назад (←)",
-    },
-    "use_xml1_shortcut": {
-        "zh": "使用 XML 1 (1)", "en": "Use XML 1 (1)", "es": "Usar XML 1 (1)",
-        "fr": "Utiliser XML 1 (1)", "ru": "Использовать XML 1 (1)",
-    },
-    "use_xml2_shortcut": {
-        "zh": "使用 XML 2 (2)", "en": "Use XML 2 (2)", "es": "Usar XML 2 (2)",
-        "fr": "Utiliser XML 2 (2)", "ru": "Использовать XML 2 (2)",
-    },
-    "next_shortcut": {
-        "zh": "下一个 (→)", "en": "Next (→)", "es": "Siguiente (→)", "fr": "Suivant (→)",
-        "ru": "Далее (→)",
-    },
-    "finish_apply_button": {
-        "zh": "完成并应用", "en": "Finish && Apply", "es": "Finalizar y aplicar",
-        "fr": "Terminer et appliquer", "ru": "Готово и применить",
-    },
-    "cancel_wizard_button": {
-        "zh": "取消向导", "en": "Cancel Wizard", "es": "Cancelar asistente",
-        "fr": "Annuler l'assistant", "ru": "Отменить мастер",
-    },
-    "current_choice_label": {
-        "zh": "当前选择：{source}", "en": "Current choice: {source}",
-        "es": "Selección actual: {source}", "fr": "Choix actuel : {source}",
-        "ru": "Текущий выбор: {source}",
-    },
-    "current_choice_unset": {
-        "zh": "未指定（默认保持文件 1）", "en": "Not set (defaults to keeping File 1)",
-        "es": "Sin especificar (por defecto mantiene el archivo 1)",
-        "fr": "Non défini (conserve le fichier 1 par défaut)",
-        "ru": "Не задано (по умолчанию сохраняется файл 1)",
-    },
-    "source_file1_xml1": {
-        "zh": "文件 1 / XML 1", "en": "File 1 / XML 1", "es": "Archivo 1 / XML 1",
-        "fr": "Fichier 1 / XML 1", "ru": "Файл 1 / XML 1",
-    },
-    "source_file2_xml2": {
-        "zh": "文件 2 / XML 2", "en": "File 2 / XML 2", "es": "Archivo 2 / XML 2",
-        "fr": "Fichier 2 / XML 2", "ru": "Файл 2 / XML 2",
-    },
-}
-
-_CURRENT_LANGUAGE = DEFAULT_LANGUAGE
-
-
-def detect_system_language():
-    """
-    Best-effort detection of the OS UI language, mapped to one of
-    SUPPORTED_LANGUAGES. Falls back to DEFAULT_LANGUAGE if the system
-    locale can't be read or isn't one of the five supported languages.
-    """
-    candidates = []
-    try:
-        loc = locale.getlocale()
-        if loc and loc[0]:
-            candidates.append(loc[0])
-    except Exception:
-        pass
-    try:
-        loc = locale.getdefaultlocale()
-        if loc and loc[0]:
-            candidates.append(loc[0])
-    except Exception:
-        pass
-    for var in ("LC_ALL", "LC_MESSAGES", "LANG", "LANGUAGE"):
-        val = os.environ.get(var)
-        if val:
-            candidates.append(val)
-
-    for candidate in candidates:
-        code = candidate.replace("-", "_").split(".")[0].split("_")[0].lower()
-        if code in SUPPORTED_LANGUAGES:
-            return code
-
-    return DEFAULT_LANGUAGE
-
-
-def set_language(code):
-    global _CURRENT_LANGUAGE
-    if code in SUPPORTED_LANGUAGES:
-        _CURRENT_LANGUAGE = code
-
-
-def get_language():
-    return _CURRENT_LANGUAGE
-
-
-def t(key, **kwargs):
-    """Translate `key` into the current language, formatting placeholders
-    (e.g. t('rule_count_label', n=3)). Falls back to English, then to the
-    raw key, so a missing translation never crashes the UI."""
-    entry = TRANSLATIONS.get(key)
-    if entry is None:
-        return key
-    text = entry.get(_CURRENT_LANGUAGE) or entry.get(DEFAULT_LANGUAGE) or key
-    if kwargs:
-        try:
-            return text.format(**kwargs)
-        except Exception:
-            return text
-    return text
+# ---- Legacy TRANSLATIONS dict (key -> {lang: value}) for existing tests ----
+TRANSLATIONS = {}
+_EN = _i18n.get_catalog(DEFAULT_LANGUAGE)
+for _k in _EN:
+    TRANSLATIONS[_k] = {}
+    for _code in SUPPORTED_LANGUAGES:
+        TRANSLATIONS[_k][_code] = _i18n.get_catalog(_code).get(_k, "") or ""
+del _EN
 
 
 def state_label(kind):
     return t("state_" + kind) if kind else t("state_same")
+
+
+# ---------------------------------------------------------------------------
+# Inline i18n REMOVED: translations now live in i18n/translations/*.json
+# 16 languages supported: en zh es hi ar bn fr ru pt id de ja ur ko it tr
+# ---------------------------------------------------------------------------
 
 
 def load_config():
@@ -736,11 +245,38 @@ def diff_paths(root1, root2):
 # Diff classification (git-style coloring, minimal-diff detection, grouping)
 # ---------------------------------------------------------------------------
 
-COLOR_ADDED = "#d9f2d9"      # only exists in XML2 (git "added" green)
-COLOR_REMOVED = "#f9d9d9"    # only exists in XML1 (git "removed" red)
-COLOR_MODIFIED = "#fff2cc"   # exists in both, own attrs/text differ (yellow)
-COLOR_CHANGED = "#dde8fb"    # exists in both, own content same, a descendant
-                              # differs (light blue "contains changes")
+# Modern diff colors – softer, professional, accessible (WCAG AA-ish)
+COLOR_ADDED    = "#e6f4ea"    # 新增：Mint 100
+COLOR_REMOVED  = "#fce8e6"    # 删除：Coral 100
+COLOR_MODIFIED = "#fef7e0"    # 修改：Amber 100
+COLOR_CHANGED  = "#e8f0fe"    # 含差异子项：Blue 100
+
+# ---------------------------------------------------------------------------
+# Modern UI theme palette (clean, desktop-app style)
+# ---------------------------------------------------------------------------
+THEME_BG          = "#f5f7fa"   # 窗口背景（浅灰白，避免纯白色刺眼）
+THEME_SURFACE     = "#ffffff"   # 卡片/面板背景
+THEME_BORDER      = "#e2e8f0"   # 边框线（柔和）
+THEME_PRIMARY     = "#2563eb"   # 主色调（Blue 600，按钮/强调）
+THEME_PRIMARY_HOV = "#1d4ed8"   # 主色悬停（更深）
+THEME_SECONDARY   = "#64748b"   # 次色（Slate 500，取消按钮等）
+THEME_TEXT        = "#1e293b"   # 主文字色（Slate 800）
+THEME_TEXT_MUTED  = "#64748b"   # 辅助文字色
+THEME_ACCENT      = "#0ea5e9"   # 点缀色（Sky 500）
+
+# Spacing scale (consistent 4/8/12/16/24 px – Figma-style step)
+SP = {"xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "xxl": 32}
+
+# Typography
+FONT_FAMILY_BASE    = ("Segoe UI", "Microsoft YaHei UI", "PingFang SC",
+                       "Noto Sans", "Arial", "TkDefaultFont")
+FONT_FAMILY_MONO    = ("Consolas", "JetBrains Mono", "Cascadia Code",
+                       "Courier New", "TkFixedFont")
+FONT_SIZE_LABEL     = 10
+FONT_SIZE_TITLE     = 11
+FONT_SIZE_HINT      = 9
+FONT_SIZE_MONO      = 10
+
 # Note: state_label(kind) (defined in the i18n module above) provides the
 # translated text for a given kind ("added"/"removed"/"modified"/"changed"/
 # "same") in the current UI language.
@@ -927,10 +463,10 @@ def group_minimal_diffs_by_tag(minimal_paths):
 
 
 def configure_diff_tags(widget):
-    widget.tag_configure("added", background=COLOR_ADDED)
-    widget.tag_configure("removed", background=COLOR_REMOVED)
-    widget.tag_configure("modified", background=COLOR_MODIFIED)
-    widget.tag_configure("changed", background=COLOR_CHANGED)
+    widget.tag_configure("added", background=COLOR_ADDED, foreground=THEME_TEXT)
+    widget.tag_configure("removed", background=COLOR_REMOVED, foreground=THEME_TEXT)
+    widget.tag_configure("modified", background=COLOR_MODIFIED, foreground=THEME_TEXT)
+    widget.tag_configure("changed", background=COLOR_CHANGED, foreground=THEME_TEXT)
 
 
 def ensure_parent_path(root, path):
@@ -1111,8 +647,20 @@ class App:
             set_language(detect_system_language())
 
         self.root.title(t("app_title"))
-        self.root.geometry("1450x900")
-        self.root.minsize(1100, 700)
+        self.root.geometry("1520x960")
+        self.root.minsize(1180, 720)
+        # 窗口初始居中
+        try:
+            self.root.update_idletasks()
+            sw = self.root.winfo_screenwidth()
+            sh = self.root.winfo_screenheight()
+            w = self.root.winfo_width()
+            h = self.root.winfo_height()
+            x = max(0, (sw - w) // 2)
+            y = max(0, (sh - h) // 2 - 40)
+            self.root.geometry("%dx%d+%d+%d" % (w, h, x, y))
+        except Exception:
+            pass
 
         self.file1 = ""
         self.file2 = ""
@@ -1177,7 +725,10 @@ class App:
             self.status.set(t("status_initial"))
 
     def build_ui(self):
-        langbar = ttk.Frame(self.root, padding=(8, 6, 8, 0))
+        # ------------------------------------------------------------------
+        # Language bar (top-right) – slim, unobtrusive
+        # ------------------------------------------------------------------
+        langbar = ttk.Frame(self.root, padding=(SP["lg"], SP["md"], SP["lg"], SP["xs"]))
         langbar.pack(fill="x")
 
         self.lang_combo = ttk.Combobox(
@@ -1185,116 +736,169 @@ class App:
             textvariable=self.lang_var,
             values=[LANGUAGE_NAMES[c] for c in SUPPORTED_LANGUAGES],
             state="readonly",
-            width=12,
+            width=14,
         )
         self.lang_combo.pack(side="right")
         self.lang_combo.bind("<<ComboboxSelected>>", self.on_language_change)
 
-        ttk.Label(langbar, text=t("language_label")).pack(side="right", padx=(0, 5))
+        ttk.Label(langbar, text=t("language_label"),
+                  style="Hint.TLabel").pack(side="right", padx=(0, SP["sm"]))
 
-        top = ttk.Frame(self.root, padding=8)
-        top.pack(fill="x")
+        # ------------------------------------------------------------------
+        # File selection – Card-style panel with border
+        # ------------------------------------------------------------------
+        top_card = ttk.Frame(self.root, style="Card.TFrame",
+                             padding=(SP["lg"], SP["md"]))
+        top_card.pack(fill="x", padx=SP["lg"], pady=SP["sm"])
+        # Add a 1px bottom border visually using a frame
+        try:
+            top_card.configure(borderwidth=1, relief="solid")
+        except Exception:
+            pass
 
-        ttk.Label(top, text=t("file1_label")).grid(row=0, column=0, sticky="w")
-        ttk.Entry(top, textvariable=self.path1).grid(
-            row=0, column=1, sticky="ew", padx=5
+        ttk.Label(top_card, text=t("file1_label"),
+                  style="Card.TLabel").grid(row=0, column=0, sticky="w", pady=(0, SP["xs"]))
+        ttk.Entry(top_card, textvariable=self.path1).grid(
+            row=0, column=1, sticky="ew", padx=(SP["md"], SP["sm"]), pady=(0, SP["xs"])
         )
-        ttk.Button(top, text=t("choose_file_button"), command=self.choose1).grid(
-            row=0, column=2
-        )
-
-        ttk.Label(top, text=t("file2_label")).grid(
-            row=1, column=0, sticky="w", pady=(6, 0)
-        )
-        ttk.Entry(top, textvariable=self.path2).grid(
-            row=1, column=1, sticky="ew", padx=5, pady=(6, 0)
-        )
-        ttk.Button(top, text=t("choose_file_button"), command=self.choose2).grid(
-            row=1, column=2, pady=(6, 0)
+        ttk.Button(top_card, text=t("choose_file_button"),
+                   style="Ghost.TButton", command=self.choose1).grid(
+            row=0, column=2, pady=(0, SP["xs"])
         )
 
-        top.columnconfigure(1, weight=1)
+        ttk.Label(top_card, text=t("file2_label"),
+                  style="Card.TLabel").grid(
+            row=1, column=0, sticky="w", pady=(SP["md"], 0)
+        )
+        ttk.Entry(top_card, textvariable=self.path2).grid(
+            row=1, column=1, sticky="ew", padx=(SP["md"], SP["sm"]), pady=(SP["md"], 0)
+        )
+        ttk.Button(top_card, text=t("choose_file_button"),
+                   style="Ghost.TButton", command=self.choose2).grid(
+            row=1, column=2, pady=(SP["md"], 0)
+        )
 
-        bar = ttk.Frame(self.root, padding=(8, 0, 8, 8))
+        top_card.columnconfigure(1, weight=1)
+
+        # ------------------------------------------------------------------
+        # Action bar
+        # ------------------------------------------------------------------
+        bar = ttk.Frame(self.root, padding=(SP["lg"], SP["xs"], SP["lg"], SP["sm"]))
         bar.pack(fill="x")
 
-        ttk.Button(bar, text=t("load_compare_button"), command=self.load_compare).pack(
-            side="left"
-        )
+        ttk.Button(bar, text=t("load_compare_button"),
+                   style="Primary.TButton",
+                   command=self.load_compare).pack(side="left", padx=(0, SP["sm"]))
         ttk.Button(
-            bar, text=t("select_merge_button"), command=self.open_merge_selector
-        ).pack(side="left", padx=5)
+            bar, text=t("select_merge_button"), style="Accent.TButton",
+            command=self.open_merge_selector
+        ).pack(side="left", padx=(0, SP["sm"]))
 
         ttk.Button(
-            bar, text=t("manual_wizard_button"), command=self.open_manual_wizard
-        ).pack(side="left", padx=5)
+            bar, text=t("manual_wizard_button"), style="Ghost.TButton",
+            command=self.open_manual_wizard
+        ).pack(side="left", padx=(0, SP["sm"]))
 
         ttk.Button(
-            bar, text=t("clear_rules_button"), command=self.clear_rules
-        ).pack(side="left", padx=5)
+            bar, text=t("clear_rules_button"), style="Ghost.TButton",
+            command=self.clear_rules
+        ).pack(side="left", padx=(0, SP["sm"]))
 
         ttk.Checkbutton(
             bar,
             text=t("only_diff_checkbox"),
             variable=self.only_diff,
             command=self.refresh_trees
-        ).pack(side="left", padx=12)
+        ).pack(side="left", padx=(SP["md"], 0))
+
+        self.rule_label = ttk.Label(bar, text=t("rule_count_label", n=len(self.rules)),
+                                    style="Title.TLabel")
+        self.rule_label.pack(side="right", padx=(0, SP["md"]))
 
         ttk.Button(
-            bar, text=t("preview_button"), command=self.preview
-        ).pack(side="right", padx=5)
+            bar, text=t("save_button"), style="Primary.TButton",
+            command=self.save_result
+        ).pack(side="right", padx=(0, SP["sm"]))
         ttk.Button(
-            bar, text=t("save_button"), command=self.save_result
-        ).pack(side="right")
+            bar, text=t("preview_button"), style="Ghost.TButton",
+            command=self.preview
+        ).pack(side="right", padx=(0, SP["sm"]))
 
-        self.rule_label = ttk.Label(bar, text=t("rule_count_label", n=len(self.rules)))
-        self.rule_label.pack(side="right", padx=15)
-
-        navbar = ttk.Frame(self.root, padding=(8, 0, 8, 8))
+        # ------------------------------------------------------------------
+        # Navigation bar
+        # ------------------------------------------------------------------
+        navbar = ttk.Frame(self.root, padding=(SP["lg"], SP["xs"], SP["lg"], SP["sm"]))
         navbar.pack(fill="x")
 
         ttk.Button(
-            navbar, text=t("prev_diff_button"), command=self.prev_diff
+            navbar, text=t("prev_diff_button"), style="Ghost.TButton",
+            command=self.prev_diff
         ).pack(side="left")
         ttk.Button(
-            navbar, text=t("next_diff_button"), command=self.next_diff
-        ).pack(side="left", padx=5)
+            navbar, text=t("next_diff_button"), style="Ghost.TButton",
+            command=self.next_diff
+        ).pack(side="left", padx=SP["sm"])
 
         current = self.nav_index + 1 if self.nav_index >= 0 else 0
         self.diff_pos_label = ttk.Label(
             navbar, text=t("diff_pos_label", current=current, total=len(self.nav_paths))
         )
-        self.diff_pos_label.pack(side="left", padx=10)
+        self.diff_pos_label.pack(side="left", padx=SP["md"])
 
+        # Legend (color swatches + labels)
         legend = ttk.Frame(navbar)
         legend.pack(side="right")
-        for text, color in (
+        for i, (text, color) in enumerate((
             (t("legend_added"), COLOR_ADDED),
             (t("legend_removed"), COLOR_REMOVED),
             (t("legend_modified"), COLOR_MODIFIED),
             (t("legend_changed"), COLOR_CHANGED),
-        ):
-            swatch = tk.Frame(legend, width=14, height=14, bg=color, relief="solid", borderwidth=1)
-            swatch.pack(side="left", padx=(10, 3))
+        )):
+            swatch = tk.Frame(legend, width=16, height=16, bg=color,
+                              highlightthickness=1,
+                              highlightbackground=THEME_BORDER,
+                              highlightcolor=THEME_BORDER,
+                              relief="flat")
+            swatch.pack(side="left",
+                        padx=((SP["md"] if i else 0), SP["xs"]),
+                        pady=1)
             swatch.pack_propagate(False)
             ttk.Label(legend, text=text).pack(side="left")
 
+        # ------------------------------------------------------------------
+        # Two trees
+        # ------------------------------------------------------------------
         pane = ttk.PanedWindow(self.root, orient="horizontal")
-        pane.pack(fill="both", expand=True, padx=8, pady=5)
+        pane.pack(fill="both", expand=True, padx=SP["lg"], pady=(0, SP["sm"]))
 
-        left = ttk.LabelFrame(pane, text=t("frame_file1"))
-        right = ttk.LabelFrame(pane, text=t("frame_file2"))
+        left = ttk.LabelFrame(pane, text=t("frame_file1"),
+                              padding=(SP["sm"], SP["sm"]))
+        right = ttk.LabelFrame(pane, text=t("frame_file2"),
+                               padding=(SP["sm"], SP["sm"]))
         pane.add(left, weight=1)
         pane.add(right, weight=1)
 
         self.view1 = self.make_tree(left)
         self.view2 = self.make_tree(right)
 
-        detail = ttk.LabelFrame(self.root, text=t("frame_detail"))
-        detail.pack(fill="both", expand=False, padx=8, pady=(0, 8))
+        # ------------------------------------------------------------------
+        # Detail pane
+        # ------------------------------------------------------------------
+        detail = ttk.LabelFrame(self.root, text=t("frame_detail"),
+                                padding=(SP["xs"], SP["xs"]))
+        detail.pack(fill="both", expand=False, padx=SP["lg"], pady=(0, SP["sm"]))
 
         self.detail = tk.Text(
-            detail, height=12, wrap="none", font=("Consolas", 9)
+            detail, height=14, wrap="none",
+            font=(FONT_FAMILY_MONO, FONT_SIZE_MONO),
+            bg=THEME_SURFACE, fg=THEME_TEXT,
+            insertbackground=THEME_TEXT,
+            selectbackground=THEME_PRIMARY,
+            selectforeground="white",
+            relief="solid", borderwidth=1,
+            highlightthickness=1, highlightbackground=THEME_BORDER,
+            highlightcolor=THEME_PRIMARY,
+            padx=8, pady=6,
         )
         dsy = ttk.Scrollbar(
             detail, orient="vertical", command=self.detail.yview
@@ -1303,9 +907,20 @@ class App:
         self.detail.pack(side="left", fill="both", expand=True)
         dsy.pack(side="right", fill="y")
 
+        # ------------------------------------------------------------------
+        # Status bar – on its own card
+        # ------------------------------------------------------------------
+        status_card = ttk.Frame(self.root, style="Card.TFrame",
+                                padding=(SP["lg"], SP["md"]))
+        status_card.pack(fill="x", padx=SP["lg"], pady=(0, SP["lg"]))
+        try:
+            status_card.configure(borderwidth=1, relief="solid")
+        except Exception:
+            pass
         ttk.Label(
-            self.root, textvariable=self.status, anchor="w"
-        ).pack(fill="x", padx=8, pady=(0, 5))
+            status_card, textvariable=self.status, anchor="w",
+            style="Card.TLabel"
+        ).pack(fill="x")
 
     def make_tree(self, parent):
         frame = ttk.Frame(parent)
@@ -1598,9 +1213,26 @@ class App:
 
         win = tk.Toplevel(self.root)
         win.title(t("preview_window_title"))
-        win.geometry("1000x750")
+        win.geometry("1040x760")
+        try:
+            win.configure(bg=THEME_BG)
+        except Exception:
+            pass
 
-        text = tk.Text(win, wrap="none", font=("Consolas", 9))
+        wrap = ttk.Frame(win, padding=SP["md"])
+        wrap.pack(fill="both", expand=True)
+        text = tk.Text(
+            wrap, wrap="none",
+            font=(FONT_FAMILY_MONO, FONT_SIZE_MONO),
+            bg=THEME_SURFACE, fg=THEME_TEXT,
+            insertbackground=THEME_TEXT,
+            selectbackground=THEME_PRIMARY,
+            selectforeground="white",
+            relief="solid", borderwidth=1,
+            highlightthickness=1, highlightbackground=THEME_BORDER,
+            highlightcolor=THEME_PRIMARY,
+            padx=8, pady=6,
+        )
         sy = ttk.Scrollbar(win, orient="vertical", command=text.yview)
         sx = ttk.Scrollbar(win, orient="horizontal", command=text.xview)
         text.configure(yscrollcommand=sy.set, xscrollcommand=sx.set)
@@ -1659,9 +1291,13 @@ class ManualMergeWizard:
                  value_pairs, nav_paths, existing_rules):
         self.window = tk.Toplevel(parent)
         self.window.title(t("wizard_title"))
-        self.window.geometry("1100x700")
-        self.window.minsize(800, 500)
+        self.window.geometry("1120x720")
+        self.window.minsize(860, 560)
         self.window.transient(parent)
+        try:
+            self.window.configure(bg=THEME_BG)
+        except Exception:
+            pass
         self.window.grab_set()
 
         self.root1 = root1
@@ -1681,51 +1317,71 @@ class ManualMergeWizard:
             self.pos_label.config(text=t("wizard_no_diffs"))
 
     def build_ui(self):
-        top = ttk.Frame(self.window, padding=8)
+        top = ttk.Frame(self.window, padding=SP["md"])
         top.pack(fill="x")
 
-        self.pos_label = ttk.Label(top, text="", font=("Arial", 11, "bold"))
+        self.pos_label = ttk.Label(top, text="", style="Title.TLabel")
         self.pos_label.pack(side="left")
 
-        self.path_label = ttk.Label(top, text="", foreground="#555")
-        self.path_label.pack(side="left", padx=12)
+        self.path_label = ttk.Label(top, text="", style="Hint.TLabel")
+        self.path_label.pack(side="left", padx=SP["md"])
 
         main = ttk.PanedWindow(self.window, orient="horizontal")
-        main.pack(fill="both", expand=True, padx=8, pady=5)
+        main.pack(fill="both", expand=True, padx=SP["md"], pady=(0, SP["sm"]))
 
-        left = ttk.LabelFrame(main, text="XML 1")
-        right = ttk.LabelFrame(main, text="XML 2")
+        left = ttk.LabelFrame(main, text="XML 1", padding=(SP["xs"], SP["xs"]))
+        right = ttk.LabelFrame(main, text="XML 2", padding=(SP["xs"], SP["xs"]))
         main.add(left, weight=1)
         main.add(right, weight=1)
 
-        self.text1 = tk.Text(left, wrap="none", font=("Consolas", 9))
-        self.text2 = tk.Text(right, wrap="none", font=("Consolas", 9))
+        common_text_opts = dict(
+            wrap="none",
+            font=(FONT_FAMILY_MONO, FONT_SIZE_MONO),
+            bg=THEME_SURFACE, fg=THEME_TEXT,
+            insertbackground=THEME_TEXT,
+            selectbackground=THEME_PRIMARY,
+            selectforeground="white",
+            relief="solid", borderwidth=1,
+            highlightthickness=1, highlightbackground=THEME_BORDER,
+            highlightcolor=THEME_PRIMARY,
+            padx=8, pady=6,
+        )
+        self.text1 = tk.Text(left, **common_text_opts)
+        self.text2 = tk.Text(right, **common_text_opts)
         self.text1.pack(fill="both", expand=True)
         self.text2.pack(fill="both", expand=True)
 
         self.choice_label = ttk.Label(
-            self.window, text=t("current_choice_label", source=t("current_choice_unset")),
-            font=("Arial", 10, "bold")
+            self.window,
+            text=t("current_choice_label", source=t("current_choice_unset")),
+            style="Title.TLabel"
         )
-        self.choice_label.pack(fill="x", padx=8, pady=(0, 4))
+        self.choice_label.pack(fill="x", padx=SP["md"], pady=(0, SP["sm"]))
 
         bottom = ttk.Frame(self.window, padding=8)
         bottom.pack(fill="x")
 
-        ttk.Button(bottom, text=t("prev_shortcut"), command=self.go_prev).pack(side="left")
+        ttk.Button(bottom, text=t("prev_shortcut"), style="Ghost.TButton",
+                   command=self.go_prev).pack(side="left")
         ttk.Button(
-            bottom, text=t("use_xml1_shortcut"), command=lambda: self.choose("xml1")
-        ).pack(side="left", padx=5)
+            bottom, text=t("use_xml1_shortcut"), style="Ghost.TButton",
+            command=lambda: self.choose("xml1")
+        ).pack(side="left", padx=SP["sm"])
         ttk.Button(
-            bottom, text=t("use_xml2_shortcut"), command=lambda: self.choose("xml2")
-        ).pack(side="left", padx=5)
+            bottom, text=t("use_xml2_shortcut"), style="Ghost.TButton",
+            command=lambda: self.choose("xml2")
+        ).pack(side="left", padx=SP["sm"])
         ttk.Button(
-            bottom, text=t("clear_source_button"), command=lambda: self.choose(None)
-        ).pack(side="left", padx=5)
-        ttk.Button(bottom, text=t("next_shortcut"), command=self.go_next).pack(side="left", padx=5)
+            bottom, text=t("clear_source_button"), style="Ghost.TButton",
+            command=lambda: self.choose(None)
+        ).pack(side="left", padx=SP["sm"])
+        ttk.Button(bottom, text=t("next_shortcut"), style="Ghost.TButton",
+                   command=self.go_next).pack(side="left", padx=SP["sm"])
 
-        ttk.Button(bottom, text=t("finish_apply_button"), command=self.finish).pack(side="right")
-        ttk.Button(bottom, text=t("cancel_wizard_button"), command=self.cancel).pack(side="right", padx=5)
+        ttk.Button(bottom, text=t("finish_apply_button"), style="Primary.TButton",
+                   command=self.finish).pack(side="right")
+        ttk.Button(bottom, text=t("cancel_wizard_button"), style="Ghost.TButton",
+                   command=self.cancel).pack(side="right", padx=SP["sm"])
 
         self.window.bind("<Left>", lambda e: self.go_prev())
         self.window.bind("<Right>", lambda e: self.go_next())
@@ -1803,9 +1459,13 @@ class MergeSelector:
     def __init__(self, parent, root1, root2, diff, existing_rules):
         self.window = tk.Toplevel(parent)
         self.window.title(t("merge_selector_title"))
-        self.window.geometry("1300x820")
-        self.window.minsize(1000, 650)
+        self.window.geometry("1320x830")
+        self.window.minsize(1040, 680)
         self.window.transient(parent)
+        try:
+            self.window.configure(bg=THEME_BG)
+        except Exception:
+            pass
         self.window.grab_set()
 
         self.root1 = root1
@@ -1834,13 +1494,13 @@ class MergeSelector:
         self.populate()
 
     def build_ui(self):
-        top = ttk.Frame(self.window, padding=8)
+        top = ttk.Frame(self.window, padding=SP["md"])
         top.pack(fill="x")
 
         ttk.Label(
             top,
             text=t("merge_selector_instruction"),
-            font=("Arial", 10, "bold")
+            style="Title.TLabel"
         ).pack(side="left")
 
         ttk.Checkbutton(
@@ -1858,18 +1518,21 @@ class MergeSelector:
         ).pack(side="right", padx=10)
 
         ttk.Button(
-            top, text=t("select_all_diff_button"), command=self.select_diff
-        ).pack(side="right", padx=5)
+            top, text=t("select_all_diff_button"), style="Ghost.TButton",
+            command=self.select_diff
+        ).pack(side="right", padx=SP["sm"])
 
         ttk.Button(
-            top, text=t("clear_selection_button"), command=lambda: self.tree.selection_set(())
+            top, text=t("clear_selection_button"), style="Ghost.TButton",
+            command=lambda: self.tree.selection_set(())
         ).pack(side="right")
 
         main = ttk.PanedWindow(self.window, orient="horizontal")
-        main.pack(fill="both", expand=True, padx=8, pady=5)
+        main.pack(fill="both", expand=True, padx=SP["md"], pady=SP["xs"])
 
         left = ttk.Frame(main)
-        right = ttk.LabelFrame(main, text=t("panel_node_compare"))
+        right = ttk.LabelFrame(main, text=t("panel_node_compare"),
+                               padding=(SP["xs"], SP["xs"]))
         main.add(left, weight=3)
         main.add(right, weight=2)
 
@@ -1898,52 +1561,63 @@ class MergeSelector:
         sx.pack(side="bottom", fill="x")
 
         configure_diff_tags(self.tree)
-        self.tree.tag_configure("group", font=("Arial", 9, "bold"))
+        self.tree.tag_configure("group", font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold"))
         self.tree.bind("<<TreeviewSelect>>", self.show_selected)
 
-        self.detail = tk.Text(right, wrap="none", font=("Consolas", 9))
+        self.detail = tk.Text(
+            right, wrap="none",
+            font=(FONT_FAMILY_MONO, FONT_SIZE_MONO),
+            bg=THEME_SURFACE, fg=THEME_TEXT,
+            insertbackground=THEME_TEXT,
+            selectbackground=THEME_PRIMARY,
+            selectforeground="white",
+            relief="solid", borderwidth=1,
+            highlightthickness=1, highlightbackground=THEME_BORDER,
+            highlightcolor=THEME_PRIMARY,
+            padx=8, pady=6,
+        )
         dsy = ttk.Scrollbar(right, orient="vertical", command=self.detail.yview)
         self.detail.configure(yscrollcommand=dsy.set)
         self.detail.pack(side="left", fill="both", expand=True)
         dsy.pack(side="right", fill="y")
 
-        bottom = ttk.Frame(self.window, padding=8)
+        bottom = ttk.Frame(self.window, padding=SP["md"])
         bottom.pack(fill="x")
 
         ttk.Label(bottom, text=t("label_set_selected")).pack(side="left")
 
         ttk.Button(
-            bottom, text=t("use_xml1_button"),
+            bottom, text=t("use_xml1_button"), style="Ghost.TButton",
             command=lambda: self.apply_source("xml1")
-        ).pack(side="left", padx=5)
+        ).pack(side="left", padx=SP["sm"])
 
         ttk.Button(
-            bottom, text=t("use_xml2_button"),
+            bottom, text=t("use_xml2_button"), style="Ghost.TButton",
             command=lambda: self.apply_source("xml2")
-        ).pack(side="left", padx=5)
+        ).pack(side="left", padx=SP["sm"])
 
         ttk.Button(
-            bottom, text=t("clear_source_button"),
+            bottom, text=t("clear_source_button"), style="Ghost.TButton",
             command=self.clear_source
-        ).pack(side="left", padx=5)
+        ).pack(side="left", padx=SP["sm"])
 
         ttk.Button(
-            bottom, text=t("all_xml1_button"),
-            command=lambda: self.set_all("xml1")
-        ).pack(side="right", padx=5)
-
-        ttk.Button(
-            bottom, text=t("all_xml2_button"),
-            command=lambda: self.set_all("xml2")
-        ).pack(side="right", padx=5)
-
-        ttk.Button(
-            bottom, text=t("cancel_button"),
+            bottom, text=t("cancel_button"), style="Ghost.TButton",
             command=self.cancel
-        ).pack(side="right", padx=5)
+        ).pack(side="right", padx=SP["sm"])
 
         ttk.Button(
-            bottom, text=t("apply_rules_button"),
+            bottom, text=t("all_xml1_button"), style="Ghost.TButton",
+            command=lambda: self.set_all("xml1")
+        ).pack(side="right", padx=SP["sm"])
+
+        ttk.Button(
+            bottom, text=t("all_xml2_button"), style="Ghost.TButton",
+            command=lambda: self.set_all("xml2")
+        ).pack(side="right", padx=SP["sm"])
+
+        ttk.Button(
+            bottom, text=t("apply_rules_button"), style="Primary.TButton",
             command=self.finish
         ).pack(side="right")
 
@@ -2123,12 +1797,201 @@ class MergeSelector:
         self.window.destroy()
 
 
+def apply_modern_theme(root, style_obj):
+    """Apply a clean, modern desktop-app look using ttk (clam theme fallback).
+    Uses the palette constants above: primary blue, soft slate neutrals."""
+
+    # ---- Theme: prefer vista/cla for consistent widgets across Windows/Linux/Mac
+    for theme_candidate in ("vista", "clam"):
+        try:
+            style_obj.theme_use(theme_candidate)
+            break
+        except Exception:
+            continue
+
+    root.configure(bg=THEME_BG)
+
+    style_obj.configure(".",
+                        background=THEME_BG,
+                        foreground=THEME_TEXT,
+                        fieldbackground=THEME_SURFACE,
+                        bordercolor=THEME_BORDER,
+                        lightcolor=THEME_BORDER,
+                        darkcolor=THEME_BORDER,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+
+    style_obj.map(".", background=[("active", THEME_BG)])
+
+    # ---- TFrame / TLabelFrame: card-style surfaces ----
+    style_obj.configure("TFrame", background=THEME_BG)
+    style_obj.configure("Card.TFrame",
+                        background=THEME_SURFACE,
+                        relief="flat")
+    style_obj.configure("TLabelframe",
+                        background=THEME_SURFACE,
+                        relief="solid",
+                        borderwidth=1)
+    style_obj.configure("TLabelframe.Label",
+                        background=THEME_SURFACE,
+                        foreground=THEME_PRIMARY,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_TITLE, "bold"))
+    style_obj.configure("TLabel",
+                        background=THEME_BG,
+                        foreground=THEME_TEXT,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+    style_obj.configure("Title.TLabel",
+                        background=THEME_BG,
+                        foreground=THEME_PRIMARY,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_TITLE, "bold"))
+    style_obj.configure("Hint.TLabel",
+                        background=THEME_BG,
+                        foreground=THEME_TEXT_MUTED,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_HINT))
+    style_obj.configure("Card.TLabel",
+                        background=THEME_SURFACE,
+                        foreground=THEME_TEXT,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+
+    # ---- TButton: Primary (solid blue) + Secondary (ghost) + Danger ----
+    style_obj.configure("TButton",
+                        padding=(SP["md"], SP["sm"]),
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold"),
+                        borderwidth=0, focusthickness=0)
+    style_obj.map("TButton",
+                  background=[("!disabled", THEME_SECONDARY),
+                              ("active", "#475569"),
+                              ("pressed", "#334155"),
+                              ("disabled", THEME_BORDER)],
+                  foreground=[("!disabled", "white"),
+                              ("disabled", "#94a3b8")])
+
+    style_obj.configure("Primary.TButton")
+    style_obj.map("Primary.TButton",
+                  background=[("!disabled", THEME_PRIMARY),
+                              ("active", THEME_PRIMARY_HOV),
+                              ("pressed", "#1e40af"),
+                              ("disabled", THEME_BORDER)],
+                  foreground=[("!disabled", "white"),
+                              ("disabled", "#94a3b8")])
+
+    style_obj.configure("Accent.TButton")
+    style_obj.map("Accent.TButton",
+                  background=[("!disabled", THEME_ACCENT),
+                              ("active", "#0284c7"),
+                              ("pressed", "#0369a1"),
+                              ("disabled", THEME_BORDER)],
+                  foreground=[("!disabled", "white"),
+                              ("disabled", "#94a3b8")])
+
+    style_obj.configure("Ghost.TButton",
+                        padding=(SP["md"], SP["sm"]))
+    style_obj.map("Ghost.TButton",
+                  background=[("!disabled", THEME_SURFACE),
+                              ("active", "#f1f5f9"),
+                              ("pressed", "#e2e8f0")],
+                  foreground=[("!disabled", THEME_TEXT),
+                              ("disabled", THEME_TEXT_MUTED)],
+                  bordercolor=[("!disabled", THEME_BORDER)])
+
+    # ---- TEntry / TCombobox ----
+    style_obj.configure("TEntry",
+                        padding=(SP["sm"], SP["sm"]),
+                        fieldbackground=THEME_SURFACE,
+                        foreground=THEME_TEXT,
+                        bordercolor=THEME_BORDER,
+                        lightcolor=THEME_BORDER,
+                        darkcolor=THEME_BORDER,
+                        insertcolor=THEME_TEXT,
+                        arrowcolor=THEME_TEXT)
+    style_obj.map("TEntry",
+                  bordercolor=[("focus", THEME_PRIMARY)],
+                  lightcolor=[("focus", THEME_PRIMARY)],
+                  darkcolor=[("focus", THEME_PRIMARY)])
+
+    style_obj.configure("TCombobox",
+                        padding=(SP["sm"], SP["sm"]),
+                        fieldbackground=THEME_SURFACE,
+                        foreground=THEME_TEXT,
+                        arrowcolor=THEME_TEXT)
+    style_obj.map("TCombobox",
+                  bordercolor=[("focus", THEME_PRIMARY)],
+                  lightcolor=[("focus", THEME_PRIMARY)],
+                  darkcolor=[("focus", THEME_PRIMARY)])
+
+    # ---- TCheckbutton / TRadiobutton ----
+    style_obj.configure("TCheckbutton",
+                        background=THEME_BG,
+                        foreground=THEME_TEXT,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+    style_obj.map("TCheckbutton",
+                  background=[("active", THEME_BG)],
+                  foreground=[("active", THEME_TEXT)])
+
+    # ---- TPanedWindow ----
+    style_obj.configure("TPanedwindow", background=THEME_BG)
+    style_obj.configure("TPanedwindow.Sash",
+                        background=THEME_BG,
+                        sashwidth=4, sashrelief="flat")
+
+    # ---- TScrollbar: slim, minimal ----
+    style_obj.configure("TScrollbar",
+                        background="#cbd5e1",
+                        troughcolor=THEME_BG,
+                        borderwidth=0,
+                        arrowcolor="#94a3b8",
+                        width=10)
+    style_obj.map("TScrollbar",
+                  background=[("active", "#94a3b8"),
+                              ("disabled", "#e2e8f0")])
+
+    # ---- Treeview (the heart of the diff display) ----
+    style_obj.configure("Treeview",
+                        background=THEME_SURFACE,
+                        fieldbackground=THEME_SURFACE,
+                        foreground=THEME_TEXT,
+                        rowheight=26,
+                        bordercolor=THEME_BORDER,
+                        lightcolor=THEME_BORDER,
+                        darkcolor=THEME_BORDER,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+    style_obj.configure("Treeview.Heading",
+                        background=THEME_BG,
+                        foreground=THEME_TEXT,
+                        relief="flat",
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL, "bold"))
+    style_obj.map("Treeview",
+                  background=[("selected", THEME_PRIMARY)],
+                  foreground=[("selected", "white")])
+    style_obj.map("Treeview.Heading",
+                  background=[("active", "#e2e8f0")])
+
+    # ---- Notebook / Tabs (optional, reserved for future use) ----
+    style_obj.configure("TNotebook",
+                        background=THEME_BG,
+                        borderwidth=0,
+                        tabmargins=(0, 2, 0, 0))
+    style_obj.configure("TNotebook.Tab",
+                        padding=(SP["lg"], SP["sm"]),
+                        background=THEME_BG,
+                        foreground=THEME_TEXT_MUTED,
+                        font=(FONT_FAMILY_BASE, FONT_SIZE_LABEL))
+    style_obj.map("TNotebook.Tab",
+                  background=[("selected", THEME_SURFACE)],
+                  foreground=[("selected", THEME_PRIMARY)],
+                  expand=[("selected", [1, 1, 1, 0])])
+
+
 def main():
     root = tk.Tk()
     try:
-        ttk.Style().theme_use("vista")
+        style = ttk.Style()
+        apply_modern_theme(root, style)
     except Exception:
-        pass
+        # Graceful fallback: theme setup must never crash the app
+        try:
+            ttk.Style().theme_use("clam")
+        except Exception:
+            pass
     App(root)
     root.mainloop()
 
