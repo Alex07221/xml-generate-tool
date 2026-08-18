@@ -1,0 +1,9 @@
+a7a4944 test: verify no hardcoded strings remain outside TRANSLATIONS, add placeholder-rendering + config round-trip tests
+741773d feat(i18n): localize ManualMergeWizard and MergeSelector; fix last hardcoded string in parse_xml_file error message
+c5b550f feat(i18n): localize main App window + live language switcher
+c10c67e feat(i18n): translation catalog + OS-locale auto-detection for zh/en/es/fr/ru
+48db1d7 feat(mergeselector): default to minimal-diff, type-grouped rule view
+4d38cf4 feat: add ManualMergeWizard dialog for step-by-step per-diff XML1/XML2 selection
+e6d58cf feat(app): git-style diff coloring, color legend, and prev/next diff navigation in main window
+e0cd325 feat(core): git-style diff classification, minimal-diff detection, value-pair reconciliation, and tag grouping
+eb4d055 baseline: original tool from project

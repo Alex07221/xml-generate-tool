@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appSettings>
+    <add key="appName" value="我的应用程序_新版" />
+    <add key="version" value="2.0.0" />
+    <add key="debugMode" value="false" />
+    <add key="maxConnections" value="200" />
+    <add key="timeout" value="30" />
+    <add key="enableCache" value="true" />
+  </appSettings>
+  <database>
+    <connectionStrings>
+      <add name="DefaultConnection" connectionString="Server=prod-server;Database=ProdDB;Uid=admin;Pwd=newpass123;" providerName="MySql" />
+    </connectionStrings>
+  </database>
+  <logging>
+    <level value="DEBUG" />
+    <file path="logs/application.log" />
+    <maxSize value="50MB" />
+  </logging>
+  <features>
+    <feature name="auth" enabled="true" />
+    <feature name="cache" enabled="false" />
+    <feature name="payment" enabled="true" />
+    <feature name="notification" enabled="true" />
+  </features>
+</configuration>
