@@ -905,13 +905,6 @@ class App:
             command=self.clear_rules
         ).pack(side="left", padx=(0, SP["sm"]))
 
-        ttk.Checkbutton(
-            bar,
-            text=t("only_diff_checkbox"),
-            variable=self.only_diff,
-            command=self.refresh_trees
-        ).pack(side="left", padx=(SP["md"], 0))
-
         self.rule_label = ttk.Label(bar, text=t("rule_count_label", n=len(self.rules)),
                                     style="Title.TLabel")
         self.rule_label.pack(side="right", padx=(0, SP["md"]))
@@ -1029,17 +1022,13 @@ class App:
 
         tree = ttk.Treeview(
             frame,
-            columns=("state", "rule"),
-            show="tree headings",
+            columns=("rule",),
+            show="tree",
             selectmode="browse"
         )
         tree.heading("#0", text=t("col_content"))
-        tree.heading("state", text=t("col_state"))
-        tree.heading("rule", text=t("col_source"))
-
-        tree.column("#0", width=500)
-        tree.column("state", width=90)
-        tree.column("rule", width=90)
+        tree.column("#0", width=560)
+        tree.column("rule", width=80, stretch=False)
 
         sy = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
         sx = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
@@ -1129,11 +1118,7 @@ class App:
             widget.delete(item)
 
         for path, elem, depth in records:
-            if self.only_diff.get() and path not in self.diff:
-                continue
-
             kind = self.kinds.get(path, "same")
-            state = state_label(kind)
 
             source = self.rules.get(path, "")
             source_text = (
@@ -1142,16 +1127,22 @@ class App:
                 else ""
             )
 
-            # Show raw XML element text (e.g. <test>1</test>) with indentation
             xml_text = element_to_xml_string(elem)
-            indent = "    " * max(0, depth - 1)
+
+            # Real parent-child hierarchy for native expand/collapse
+            parent_path = path.rsplit("/", 1)[0] if "/" in path else ""
+            # Verify parent exists in tree, otherwise attach to root
+            parent_iid = parent_path if parent_path and widget.exists(parent_path) else ""
+
+            # Auto-expand: root + nodes containing diffs; collapse deep "same" nodes
+            open_node = depth <= 1 or path in self.diff or kind in ("changed",)
+
             widget.insert(
-                "",
-                "end",
-                iid=path,
-                text=indent + xml_text,
-                values=(state, source_text),
-                tags=(kind,) if kind != "same" else ()
+                parent_iid, "end", iid=path,
+                text=xml_text,
+                values=(source_text,),
+                tags=(kind,) if kind != "same" else (),
+                open=open_node
             )
 
     def on_tree_select(self, event=None):
@@ -1240,14 +1231,17 @@ class App:
         else:
             highlight1 = highlight2 = path
 
-        if highlight1 and self.view1.exists(highlight1):
-            self.view1.selection_set(highlight1)
-            self.view1.see(highlight1)
-            self.view1.focus(highlight1)
-        if highlight2 and self.view2.exists(highlight2):
-            self.view2.selection_set(highlight2)
-            self.view2.see(highlight2)
-            self.view2.focus(highlight2)
+        for view, target in ((self.view1, highlight1), (self.view2, highlight2)):
+            if target and view.exists(target):
+                # Expand all ancestors so the target is visible
+                parts = target.split("/")
+                for i in range(2, len(parts)):
+                    ancestor = "/".join(parts[:i])
+                    if view.exists(ancestor):
+                        view.item(ancestor, open=True)
+                view.see(target)
+                view.selection_set(target)
+                view.focus(target)
 
         self.show_detail(path)
         self.update_diff_pos_label()
@@ -1638,17 +1632,13 @@ class MergeSelector:
 
         self.tree = ttk.Treeview(
             left,
-            columns=("status", "source"),
-            show="tree headings",
+            columns=("source",),
+            show="tree",
             selectmode="extended"
         )
         self.tree.heading("#0", text=t("col_content"))
-        self.tree.heading("status", text=t("col_state"))
-        self.tree.heading("source", text=t("col_source"))
-
-        self.tree.column("#0", width=520)
-        self.tree.column("status", width=90)
-        self.tree.column("source", width=90)
+        self.tree.column("#0", width=560)
+        self.tree.column("source", width=80, stretch=False)
 
         sy = ttk.Scrollbar(left, orient="vertical", command=self.tree.yview)
         sx = ttk.Scrollbar(left, orient="horizontal", command=self.tree.xview)
@@ -1755,7 +1745,7 @@ class MergeSelector:
             self.tree.insert(
                 "", "end", iid=group_iid,
                 text=t("group_row_label", tag=tag, n=len(items)),
-                values=(t("status_group"), group_source_text),
+                values=(group_source_text,),
                 tags=("group",),
                 open=False
             )
@@ -1771,7 +1761,7 @@ class MergeSelector:
                 self.tree.insert(
                     group_iid, "end", iid=path,
                     text=element_to_xml_string(elem),
-                    values=(state_label(kind), source_text),
+                    values=(source_text,),
                     tags=(kind,)
                 )
 
@@ -1798,7 +1788,7 @@ class MergeSelector:
             self.tree.insert(
                 "", "end", iid=path,
                 text=element_to_xml_string(elem),
-                values=(state_label(kind), source_text),
+                values=(source_text,),
                 tags=(kind,) if kind != "same" else ()
             )
 
