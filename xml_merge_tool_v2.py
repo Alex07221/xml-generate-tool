@@ -106,6 +106,28 @@ def pretty_xml(elem):
         return raw
 
 
+def element_to_xml_string(elem):
+    """Render a single element as a compact XML string, e.g. <test>1</test>.
+    Shows the tag + attributes + text content. For container elements with
+    children, shows <tag attrs>...</tag>."""
+    if elem is None:
+        return ""
+    tag = strip_namespace(elem.tag)
+    attrs = ""
+    for k, v in elem.attrib.items():
+        val = str(v)
+        if len(val) > 50:
+            val = val[:47] + "..."
+        attrs += ' %s="%s"' % (k, val)
+    text = normalize_text(elem.text)
+    children = list(elem)
+    if not children and not text:
+        return "<%s%s/>" % (tag, attrs)
+    if not children:
+        return "<%s%s>%s</%s>" % (tag, attrs, text, tag)
+    return "<%s%s>...</%s>" % (tag, attrs, tag)
+
+
 def element_summary(elem):
     """Return a short, human-readable summary of an element's *actual content*
     (not its internal path). Designed for non-developer users.
@@ -1007,17 +1029,15 @@ class App:
 
         tree = ttk.Treeview(
             frame,
-            columns=("content", "state", "rule"),
+            columns=("state", "rule"),
             show="tree headings",
             selectmode="browse"
         )
-        tree.heading("#0", text=t("col_element"))
-        tree.heading("content", text=t("col_content"))
+        tree.heading("#0", text=t("col_content"))
         tree.heading("state", text=t("col_state"))
         tree.heading("rule", text=t("col_source"))
 
-        tree.column("#0", width=200)
-        tree.column("content", width=420)
+        tree.column("#0", width=500)
         tree.column("state", width=90)
         tree.column("rule", width=90)
 
@@ -1112,7 +1132,6 @@ class App:
             if self.only_diff.get() and path not in self.diff:
                 continue
 
-            tag = strip_namespace(elem.tag)
             kind = self.kinds.get(path, "same")
             state = state_label(kind)
 
@@ -1123,18 +1142,15 @@ class App:
                 else ""
             )
 
-            # Show actual element content instead of internal semantic path
-            content = element_summary(elem)
-
-            # Flat tree with indentation encoded in display text. This avoids
-            # recursively constructing thousands of Tk nodes at once.
+            # Show raw XML element text (e.g. <test>1</test>) with indentation
+            xml_text = element_to_xml_string(elem)
             indent = "    " * max(0, depth - 1)
             widget.insert(
                 "",
                 "end",
                 iid=path,
-                text=indent + tag,
-                values=(content, state, source_text),
+                text=indent + xml_text,
+                values=(state, source_text),
                 tags=(kind,) if kind != "same" else ()
             )
 
@@ -1622,17 +1638,15 @@ class MergeSelector:
 
         self.tree = ttk.Treeview(
             left,
-            columns=("content", "status", "source"),
+            columns=("status", "source"),
             show="tree headings",
             selectmode="extended"
         )
-        self.tree.heading("#0", text=t("col_element"))
-        self.tree.heading("content", text=t("col_content"))
+        self.tree.heading("#0", text=t("col_content"))
         self.tree.heading("status", text=t("col_state"))
         self.tree.heading("source", text=t("col_source"))
 
-        self.tree.column("#0", width=200)
-        self.tree.column("content", width=440)
+        self.tree.column("#0", width=520)
         self.tree.column("status", width=90)
         self.tree.column("source", width=90)
 
@@ -1741,7 +1755,7 @@ class MergeSelector:
             self.tree.insert(
                 "", "end", iid=group_iid,
                 text=t("group_row_label", tag=tag, n=len(items)),
-                values=("", t("status_group"), group_source_text),
+                values=(t("status_group"), group_source_text),
                 tags=("group",),
                 open=False
             )
@@ -1753,11 +1767,11 @@ class MergeSelector:
                     else t("source_file2") if source == "xml2"
                     else ""
                 )
+                elem = self.index1.get(path) or self.index2.get(path)
                 self.tree.insert(
                     group_iid, "end", iid=path,
-                    text=tag,
-                    values=(element_summary(self.index1.get(path) or self.index2.get(path)),
-                            state_label(kind), source_text),
+                    text=element_to_xml_string(elem),
+                    values=(state_label(kind), source_text),
                     tags=(kind,)
                 )
 
@@ -1772,7 +1786,6 @@ class MergeSelector:
             a = self.index1.get(path)
             b = self.index2.get(path)
             elem = a if a is not None else b
-            tag = strip_namespace(elem.tag)
             kind = self.kinds.get(path, "same")
 
             source = self.rules.get(path, "")
@@ -1784,8 +1797,8 @@ class MergeSelector:
 
             self.tree.insert(
                 "", "end", iid=path,
-                text=tag,
-                values=(element_summary(elem), state_label(kind), source_text),
+                text=element_to_xml_string(elem),
+                values=(state_label(kind), source_text),
                 tags=(kind,) if kind != "same" else ()
             )
 
