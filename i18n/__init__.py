@@ -34,6 +34,7 @@ i18n 模块：从独立的 JSON 文件加载 16 种语言的翻译。
 import json
 import locale
 import os
+import sys
 
 # ---------------------------------------------------------------------------
 # 基本常量：Top 16 种最常用语言
@@ -68,8 +69,27 @@ DEFAULT_LANGUAGE = "en"
 # ---------------------------------------------------------------------------
 # 运行时状态
 # ---------------------------------------------------------------------------
-_TRANSLATIONS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                 "translations")
+
+def _find_translations_dir():
+    """查找翻译目录，同时支持开发模式和 PyInstaller 打包模式。
+
+    开发模式：translations 在 __file__ 同级目录下。
+    打包模式：translations 在 exe 同级的 i18n/ 目录下（外部存储）。
+    """
+    local = os.path.join(os.path.dirname(os.path.abspath(__file__)), "translations")
+    if os.path.isdir(local):
+        return local
+
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(sys.executable)
+        external = os.path.join(exe_dir, "i18n", "translations")
+        if os.path.isdir(external):
+            return external
+
+    return local
+
+
+_TRANSLATIONS_DIR = _find_translations_dir()
 _CATALOG_CACHE = {}          # lang_code -> dict
 _CURRENT_LANGUAGE = DEFAULT_LANGUAGE
 
