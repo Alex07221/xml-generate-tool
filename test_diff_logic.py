@@ -183,7 +183,7 @@ PARAM_KEYS_AND_SAMPLE_KWARGS = {
     "status_saved": {"path": "/tmp/out.xml"},
     "status_manual_wizard_updated": {"n": 4},
     "status_rules_set": {"n": 4},
-    "detail_path_header": {"path": "/root/a"},
+    "detail_location_header": {"location": "/root/a"},
     "detail_current_source": {"source": "File 1"},
     "parse_error_message": {"path": "/tmp/x.xml", "error": "boom"},
     "group_row_label": {"tag": "a", "n": 2},

@@ -106,6 +106,85 @@ def pretty_xml(elem):
         return raw
 
 
+def element_summary(elem):
+    """Return a short, human-readable summary of an element's *actual content*
+    (not its internal path). Designed for non-developer users.
+
+    Priority:
+      1. Attributes shown as key="value" pairs (first 3, most informative)
+      2. Leaf text content
+      3. Children count for container elements
+      4. Fallback: "—"
+    """
+    if elem is None:
+        return ""
+
+    # Attributes — most useful for config-style XML (key="..." value="...")
+    attrs = list(elem.attrib.items())
+    if attrs:
+        parts = []
+        for k, v in attrs[:3]:
+            val = str(v)
+            if len(val) > 40:
+                val = val[:37] + "..."
+            parts.append('%s="%s"' % (k, val))
+        suffix = "" if len(attrs) <= 3 else "  (+%d)" % (len(attrs) - 3)
+        return "  ".join(parts) + suffix
+
+    # Leaf text
+    text = normalize_text(elem.text)
+    if text and not list(elem):
+        return text if len(text) <= 60 else text[:57] + "..."
+
+    # Container with children
+    n = len(list(elem))
+    if n:
+        return "(%d)" % n
+
+    return ""
+
+
+def friendly_location(path):
+    """Convert a semantic path like
+    /configuration/appSettings[1]/add|@('attr', 'key', 'appName')
+    into a readable breadcrumb like:
+    appSettings › add  (key=appName)
+    """
+    if not path:
+        return ""
+    # Strip leading /
+    parts = [p for p in path.split("/") if p]
+    if not parts:
+        return path
+
+    crumbs = []
+    for i, part in enumerate(parts):
+        # Remove [N] index suffix
+        clean = part
+        if "[" in clean:
+            clean = clean[:clean.index("[")]
+        # Extract semantic key from |@ suffix
+        key_info = ""
+        if "|" in part:
+            after_pipe = part[part.index("|") + 1:]
+            # Try to parse @('attr', 'key', 'value') or similar
+            if after_pipe.startswith("@"):
+                try:
+                    import ast
+                    parsed = ast.literal_eval(after_pipe[1:])
+                    if isinstance(parsed, tuple) and len(parsed) >= 3:
+                        key_info = "  (%s=%s)" % (parsed[1], parsed[2])
+                except Exception:
+                    key_info = ""
+            clean = clean[:clean.index("|")] if "|" in clean else clean
+        # Skip root tag (usually generic like "configuration")
+        if i == 0 and len(parts) > 1:
+            continue
+        crumbs.append(clean + key_info)
+
+    return " › ".join(crumbs) if crumbs else parts[-1].split("[")[0].split("|")[0]
+
+
 def compact_xml(elem):
     return ET.tostring(elem, encoding="unicode")
 
@@ -928,19 +1007,19 @@ class App:
 
         tree = ttk.Treeview(
             frame,
-            columns=("path", "state", "rule"),
+            columns=("content", "state", "rule"),
             show="tree headings",
             selectmode="browse"
         )
         tree.heading("#0", text=t("col_element"))
-        tree.heading("path", text=t("col_path"))
+        tree.heading("content", text=t("col_content"))
         tree.heading("state", text=t("col_state"))
         tree.heading("rule", text=t("col_source"))
 
-        tree.column("#0", width=260)
-        tree.column("path", width=480)
-        tree.column("state", width=100)
-        tree.column("rule", width=100)
+        tree.column("#0", width=200)
+        tree.column("content", width=420)
+        tree.column("state", width=90)
+        tree.column("rule", width=90)
 
         sy = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
         sx = ttk.Scrollbar(frame, orient="horizontal", command=tree.xview)
@@ -1044,6 +1123,9 @@ class App:
                 else ""
             )
 
+            # Show actual element content instead of internal semantic path
+            content = element_summary(elem)
+
             # Flat tree with indentation encoded in display text. This avoids
             # recursively constructing thousands of Tk nodes at once.
             indent = "    " * max(0, depth - 1)
@@ -1052,7 +1134,7 @@ class App:
                 "end",
                 iid=path,
                 text=indent + tag,
-                values=(path, state, source_text),
+                values=(content, state, source_text),
                 tags=(kind,) if kind != "same" else ()
             )
 
@@ -1071,7 +1153,9 @@ class App:
         a, b = resolve_diff_nodes(path, self.index1, self.index2, self.value_pairs)
 
         self.detail.delete("1.0", "end")
-        self.detail.insert("end", t("detail_path_header", path=path))
+        # Show friendly breadcrumb instead of raw semantic path
+        self.detail.insert("end", t("detail_location_header",
+                                     location=friendly_location(path)))
 
         if path in self.rules:
             self.detail.insert(
@@ -1538,19 +1622,19 @@ class MergeSelector:
 
         self.tree = ttk.Treeview(
             left,
-            columns=("path", "status", "source"),
+            columns=("content", "status", "source"),
             show="tree headings",
             selectmode="extended"
         )
         self.tree.heading("#0", text=t("col_element"))
-        self.tree.heading("path", text=t("col_path"))
+        self.tree.heading("content", text=t("col_content"))
         self.tree.heading("status", text=t("col_state"))
         self.tree.heading("source", text=t("col_source"))
 
-        self.tree.column("#0", width=260)
-        self.tree.column("path", width=500)
-        self.tree.column("status", width=100)
-        self.tree.column("source", width=100)
+        self.tree.column("#0", width=200)
+        self.tree.column("content", width=440)
+        self.tree.column("status", width=90)
+        self.tree.column("source", width=90)
 
         sy = ttk.Scrollbar(left, orient="vertical", command=self.tree.yview)
         sx = ttk.Scrollbar(left, orient="horizontal", command=self.tree.xview)
@@ -1672,7 +1756,8 @@ class MergeSelector:
                 self.tree.insert(
                     group_iid, "end", iid=path,
                     text=tag,
-                    values=(path, state_label(kind), source_text),
+                    values=(element_summary(self.index1.get(path) or self.index2.get(path)),
+                            state_label(kind), source_text),
                     tags=(kind,)
                 )
 
@@ -1700,7 +1785,7 @@ class MergeSelector:
             self.tree.insert(
                 "", "end", iid=path,
                 text=tag,
-                values=(path, state_label(kind), source_text),
+                values=(element_summary(elem), state_label(kind), source_text),
                 tags=(kind,) if kind != "same" else ()
             )
 
@@ -1772,18 +1857,23 @@ class MergeSelector:
             items = self.groups.get(tag, [])
             self.detail.insert("end", t("detail_group_header", tag=tag, n=len(items)))
             for path, kind in items:
-                self.detail.insert("end", "· %s  [%s]\n" % (path, state_label(kind)))
+                elem = self.index1.get(path) or self.index2.get(path)
+                summary = element_summary(elem)
+                self.detail.insert("end", "· %s  [%s]  %s\n"
+                                   % (strip_namespace(elem.tag) if elem is not None else "?",
+                                      state_label(kind), summary))
             return
 
         path = iid
         a, b = resolve_diff_nodes(path, self.index1, self.index2, self.value_pairs)
 
-        self.detail.insert("end", t("detail_path_header", path=path))
-        self.detail.insert("end", "===== XML 1 =====\n")
+        self.detail.insert("end", t("detail_location_header",
+                                     location=friendly_location(path)))
+        self.detail.insert("end", t("detail_file1_header"))
         self.detail.insert(
             "end", t("not_exist") + "\n" if a is None else pretty_xml(a)
         )
-        self.detail.insert("end", "\n===== XML 2 =====\n")
+        self.detail.insert("end", t("detail_file2_header"))
         self.detail.insert(
             "end", t("not_exist") + "\n" if b is None else pretty_xml(b)
         )
