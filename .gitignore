@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+build_tmp/
+build_dist/
+XMLCompareMerge/
+XMLCompareMerge-*.zip
+xml_merge_config.json
